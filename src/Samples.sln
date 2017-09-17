@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.8
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Basic", "Sample.Basic\Sample.Basic.csproj", "{4529D0EB-B8E4-4568-9DC4-E8FC07635721}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.CustomTenantDistinguisher", "Sample.CustomTenantDistinguisher\Sample.CustomTenantDistinguisher.csproj", "{AB22F7C2-42F2-40A7-BB36-BB32896FD025}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.TenantContainer", "Sample.TenantContainer\Sample.TenantContainer.csproj", "{80B54014-1FBB-4928-B594-FDBEB76E2670}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.TenantContainer", "Sample.TenantContainer\Sample.TenantContainer.csproj", "{80B54014-1FBB-4928-B594-FDBEB76E2670}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.AspNetCore20", "Sample.AspNetCore20\Sample.AspNetCore20.csproj", "{34349400-70D6-472B-B58B-55875CE4B7F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{80B54014-1FBB-4928-B594-FDBEB76E2670}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80B54014-1FBB-4928-B594-FDBEB76E2670}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80B54014-1FBB-4928-B594-FDBEB76E2670}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34349400-70D6-472B-B58B-55875CE4B7F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34349400-70D6-472B-B58B-55875CE4B7F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34349400-70D6-472B-B58B-55875CE4B7F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34349400-70D6-472B-B58B-55875CE4B7F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
