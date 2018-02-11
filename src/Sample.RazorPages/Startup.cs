@@ -64,6 +64,42 @@ namespace Sample.RazorPages
                         .AddPerRequestContainerMiddlewareServices()
                         .AddPerTenantMiddlewarePipelineServices(); // allows tenants to have there own middleware pipeline accessor stored in their tenant containers.
                                                                    // .WithModuleContainers(); // Creates a child container per IModule.
+                    })
+                    .ConfigureTenantMiddleware((a) =>
+                    {
+                        
+                        a.OnInitialiseTenantPipeline((b, c) =>
+                        {
+                            var log = c.ApplicationServices.GetRequiredService<ILogger<Startup>>();
+                            logger.LogDebug("Configuring tenant middleware pipeline for tenant: " + b.Tenant?.Name ?? "");
+
+
+                            //if (env.IsDevelopment())
+                            //{
+                            //    appBuilder.UseBrowserLink();
+                            //    appBuilder.UseDeveloperExceptionPage();
+                            //}
+                            //else
+                            //{
+                            //    appBuilder.UseExceptionHandler("/Error");
+                            //}
+
+                            c.UseStaticFiles();
+
+                            // appBuilder.UseStaticFiles(); // This demonstrates static files middleware, but below I am also using per tenant hosting environment which means each tenant can see its own static files in addition to the main application level static files.
+
+                            //  appBuilder.UseModules<Tenant, ModuleBase>();
+
+                            // welcome page only enabled for tenant FOO.
+                            if (b.Tenant?.Name == "Foo")
+                            {
+                                c.UseWelcomePage("/welcome");
+                            }
+
+                            c.UseMvc();
+                            // display info.
+
+                        });
                     });
                 // configure per tenant hosting environment.
                 //.ConfigurePerTenantHostingEnvironment(_environment, (tenantHostingEnvironmentOptions) =>
@@ -91,56 +127,63 @@ namespace Sample.RazorPages
             return serviceProvider;
         }
 
-        public IConfiguration Configuration { get; }       
+        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
 
-            app.UseRouter(((routeBuilder) =>
+            app.UseMultitenancy<Tenant>((options) =>
             {
-                // Makes sure that should any child route match, then the tenant container is restored prior to that route handling the request.
-                routeBuilder.EnsureTenantContainer<Tenant>((childRouteBuilder) =>
-                {
-                    // Adds a route that will handle the request via the current tenants middleware pipleine. 
-                    childRouteBuilder.MapTenantMiddlewarePipeline<Tenant>((context, appBuilder) =>
-                    {
-
-                        var logger = appBuilder.ApplicationServices.GetRequiredService<ILogger<Startup>>();
-                        logger.LogDebug("Configuring tenant middleware pipeline for tenant: " + context.Tenant?.Name ?? "");
+                options.UsePerTenantContainers();
+                options.UsePerTenantMiddlewarePipeline();
+            });
 
 
-                        if (env.IsDevelopment())
-                        {
-                            appBuilder.UseBrowserLink();
-                            appBuilder.UseDeveloperExceptionPage();
-                        }
-                        else
-                        {
-                            appBuilder.UseExceptionHandler("/Error");
-                        }
+            //app.UseRouter(((routeBuilder) =>
+            //{
+            //    // Makes sure that should any child route match, then the tenant container is restored prior to that route handling the request.
+            //    routeBuilder.EnsureTenantContainer<Tenant>((childRouteBuilder) =>
+            //    {
+            //        // Adds a route that will handle the request via the current tenants middleware pipleine. 
+            //        childRouteBuilder.MapTenantMiddlewarePipeline<Tenant>((context, appBuilder) =>
+            //        {
 
-                        appBuilder.UseStaticFiles();
-                      
-                        // appBuilder.UseStaticFiles(); // This demonstrates static files middleware, but below I am also using per tenant hosting environment which means each tenant can see its own static files in addition to the main application level static files.
+            //            var logger = appBuilder.ApplicationServices.GetRequiredService<ILogger<Startup>>();
+            //            logger.LogDebug("Configuring tenant middleware pipeline for tenant: " + context.Tenant?.Name ?? "");
 
-                        //  appBuilder.UseModules<Tenant, ModuleBase>();
 
-                        // welcome page only enabled for tenant FOO.
-                        if (context.Tenant?.Name == "Foo")
-                        {
-                            appBuilder.UseWelcomePage("/welcome");
-                        }
+            //            if (env.IsDevelopment())
+            //            {
+            //                appBuilder.UseBrowserLink();
+            //                appBuilder.UseDeveloperExceptionPage();
+            //            }
+            //            else
+            //            {
+            //                appBuilder.UseExceptionHandler("/Error");
+            //            }
 
-                        appBuilder.UseMvc();
-                        // display info.
-                        // appBuilder.Run(DisplayInfo);
+            //            appBuilder.UseStaticFiles();
 
-                    }); // handled by the tenant's middleware pipeline - if there is one.                  
-                });
-            }));
+            //            // appBuilder.UseStaticFiles(); // This demonstrates static files middleware, but below I am also using per tenant hosting environment which means each tenant can see its own static files in addition to the main application level static files.
 
-           
+            //            //  appBuilder.UseModules<Tenant, ModuleBase>();
+
+            //            // welcome page only enabled for tenant FOO.
+            //            if (context.Tenant?.Name == "Foo")
+            //            {
+            //                appBuilder.UseWelcomePage("/welcome");
+            //            }
+
+            //            appBuilder.UseMvc();
+            //            // display info.
+            //            // appBuilder.Run(DisplayInfo);
+
+            //        }); // handled by the tenant's middleware pipeline - if there is one.                  
+            //    });
+            //}));
+
+
         }
     }
 }
