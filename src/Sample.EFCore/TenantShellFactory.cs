@@ -2,7 +2,7 @@
 using Dotnettency;
 using System;
 
-namespace Sample.AspNetCore20
+namespace Sample.EFCore
 {
     public class TenantShellFactory : ITenantShellFactory<Tenant>
     {
@@ -27,7 +27,7 @@ namespace Sample.AspNetCore20
             }
 
 
-            throw new NotImplementedException("Please make request on ports 5000 - 5002 to see various behaviour.");
+            throw new NotImplementedException("Please make request on ports 5000 - 5003 to see various behaviour.");
 
         }
     }

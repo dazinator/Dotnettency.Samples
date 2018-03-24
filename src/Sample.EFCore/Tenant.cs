@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sample.AspNetCore20
+namespace Sample.EFCore
 {
     public class Tenant
     {
