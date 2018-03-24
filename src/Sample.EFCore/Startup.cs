@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
 namespace Sample.EFCore
@@ -19,6 +21,14 @@ namespace Sample.EFCore
                 multiTenancyOptions
                     .InitialiseTenant<TenantShellFactory>();
             });
+
+            services.AddDbContext<MultitenantDbContext>((options) =>
+            {
+                var path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
+                var dbFilePath = System.IO.Path.Combine(path, "DotnettencyMultitenantDb.db");
+                options.UseSqlite($"Filename={dbFilePath};");
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,12 +43,56 @@ namespace Sample.EFCore
 
             app.UseMultitenancy<Tenant>((options) =>
             {
-                options.UsePerTenantContainers();
-
+               // options.UsePerTenantContainers();
             });
+
+            app.Map("/AddBlog", (b) =>
+            {
+                b.Run(async (context) =>
+                {                             
+
+                    var tenantAwaredDbContext = context.RequestServices.GetRequiredService<MultitenantDbContext>();
+
+                    // We will create a blog post entity.
+                    // It will be automatically get a TenantID for the current tenant.
+                    // We don't have to set TenantID, its automatic.
+
+                    var blog = new Blog()
+                    {
+                        Rating = 1,
+                        Url = $"http://" + Guid.NewGuid()
+                    };
+
+                    tenantAwaredDbContext.Add(blog);
+                    await tenantAwaredDbContext.SaveChangesAsync();
+                });               
+            });
+
+            app.Map("/Blogs", (b) =>
+            {
+                b.Run(async (context) =>
+                {
+                    var tenantAwaredDbContext = context.RequestServices.GetRequiredService<MultitenantDbContext>();
+                    var blogs = await tenantAwaredDbContext.Blogs.ToArrayAsync();
+                    foreach (var item in blogs)
+                    {
+                        await context.Response.WriteAsync($"Blog Id: {item.BlogId}, Url: {item.Url}");
+                    }
+                });
+            });
+               
 
             app.Run(async (context) =>
             {
+
+                // Do your usual DB creation / migreation if necessary to ensure DB exists and is up to date.
+                // Ensure db is created..
+                using (var scope = context.RequestServices.CreateScope())
+                {
+                    var scopedDbContext = scope.ServiceProvider.GetRequiredService<MultitenantDbContext>();
+                    await scopedDbContext.Database.EnsureCreatedAsync();
+                }
+
                 var tenantTask = context.RequestServices.GetRequiredService<Task<Tenant>>();
                 var tenant = await tenantTask;
 
