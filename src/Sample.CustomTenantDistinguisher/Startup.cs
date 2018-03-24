@@ -14,9 +14,9 @@ namespace Sample.CustomTenantDistinguisher
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMultiTenancy<Tenant>((multiTenancyOptions) =>
+            services.AddAspNetCoreMultiTenancy<Tenant>((multiTenancyOptions) =>
             {
-                multiTenancyOptions
+                multiTenancyOptions               
                 .DistinguishTenantsWith<CookieTenantDistinguisherFactory>()
                     .InitialiseTenant<TenantShellFactory>();
             });

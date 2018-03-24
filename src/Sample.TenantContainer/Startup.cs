@@ -15,7 +15,7 @@ namespace Sample.TenantContainer
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            return services.AddMultiTenancy<Tenant>((multiTenancyOptions) =>
+            return services.AddAspNetCoreMultiTenancy<Tenant>((multiTenancyOptions) =>
             {
                 multiTenancyOptions
                     .InitialiseTenant<TenantShellFactory>()

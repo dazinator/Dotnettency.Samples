@@ -1,6 +1,7 @@
 ﻿using Dotnettency;
 using System;
 using Microsoft.AspNetCore.Http;
+using Dotnettency.AspNetCore;
 
 namespace Sample.CustomTenantDistinguisher
 {
