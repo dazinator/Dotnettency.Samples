@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.TenantContainer", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.RazorPages", "Sample.RazorPages\Sample.RazorPages.csproj", "{0D72CCB0-EFE0-4B1C-A9F3-7A3D4CE77F04}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.EFCore", "Sample.EFCore\Sample.EFCore.csproj", "{78E8FFE8-7F32-4359-A920-0A50A458C2FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.EFCore.MultitenantDb", "Sample.EFCore.MultitenantDb\Sample.EFCore.MultitenantDb.csproj", "{6E15CF09-9F9D-48D8-86DD-5B58D6855F6D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{0D72CCB0-EFE0-4B1C-A9F3-7A3D4CE77F04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D72CCB0-EFE0-4B1C-A9F3-7A3D4CE77F04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D72CCB0-EFE0-4B1C-A9F3-7A3D4CE77F04}.Release|Any CPU.Build.0 = Release|Any CPU
-		{78E8FFE8-7F32-4359-A920-0A50A458C2FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78E8FFE8-7F32-4359-A920-0A50A458C2FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{78E8FFE8-7F32-4359-A920-0A50A458C2FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{78E8FFE8-7F32-4359-A920-0A50A458C2FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E15CF09-9F9D-48D8-86DD-5B58D6855F6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E15CF09-9F9D-48D8-86DD-5B58D6855F6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E15CF09-9F9D-48D8-86DD-5B58D6855F6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E15CF09-9F9D-48D8-86DD-5B58D6855F6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

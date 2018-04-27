@@ -22,7 +22,7 @@ namespace Sample.EFCore
                     .InitialiseTenant<TenantShellFactory>();
             });
 
-            services.AddDbContext<MultitenantDbContext>((options) =>
+            services.AddDbContext<SampleMultitenantDbContext>((options) =>
             {
                 var path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
                 var dbFilePath = System.IO.Path.Combine(path, "DotnettencyMultitenantDb.db");
@@ -46,12 +46,27 @@ namespace Sample.EFCore
                // options.UsePerTenantContainers();
             });
 
+            app.Use(async (context, next) =>
+            {
+                // Do your usual DB creation / migreation if necessary to ensure DB exists and is up to date.
+                // Ensure db is created..
+                using (var scope = context.RequestServices.CreateScope())
+                {
+                    var scopedDbContext = scope.ServiceProvider.GetRequiredService<SampleMultitenantDbContext>();
+                    await scopedDbContext.Database.EnsureCreatedAsync();
+                }
+
+                await next?.Invoke();
+
+                // Do logging or other work that doesn't write to the Response.
+            });
+
             app.Map("/AddBlog", (b) =>
             {
                 b.Run(async (context) =>
                 {                             
 
-                    var tenantAwaredDbContext = context.RequestServices.GetRequiredService<MultitenantDbContext>();
+                    var tenantAwaredDbContext = context.RequestServices.GetRequiredService<SampleMultitenantDbContext>();
 
                     // We will create a blog post entity.
                     // It will be automatically get a TenantID for the current tenant.
@@ -64,7 +79,7 @@ namespace Sample.EFCore
                     };
 
                     tenantAwaredDbContext.Add(blog);
-                    await tenantAwaredDbContext.SaveChangesAsync();
+                    tenantAwaredDbContext.SaveChanges();
                 });               
             });
 
@@ -72,7 +87,7 @@ namespace Sample.EFCore
             {
                 b.Run(async (context) =>
                 {
-                    var tenantAwaredDbContext = context.RequestServices.GetRequiredService<MultitenantDbContext>();
+                    var tenantAwaredDbContext = context.RequestServices.GetRequiredService<SampleMultitenantDbContext>();
                     var blogs = await tenantAwaredDbContext.Blogs.ToArrayAsync();
                     foreach (var item in blogs)
                     {
@@ -83,15 +98,7 @@ namespace Sample.EFCore
                
 
             app.Run(async (context) =>
-            {
-
-                // Do your usual DB creation / migreation if necessary to ensure DB exists and is up to date.
-                // Ensure db is created..
-                using (var scope = context.RequestServices.CreateScope())
-                {
-                    var scopedDbContext = scope.ServiceProvider.GetRequiredService<MultitenantDbContext>();
-                    await scopedDbContext.Database.EnsureCreatedAsync();
-                }
+            {                              
 
                 var tenantTask = context.RequestServices.GetRequiredService<Task<Tenant>>();
                 var tenant = await tenantTask;
