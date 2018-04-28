@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -40,11 +41,19 @@ namespace Sample.EFCore
             return default(TIdType);
         }
 
-        protected void HasTenantIdFilter<T>(ModelBuilder modelBuilder, string tenantIdPropertyName, Func<T, TIdType> getTenantId)
+
+        protected void HasTenantIdFilter<T>(ModelBuilder modelBuilder, string tenantIdPropertyName, Expression<Func<T, TIdType>> idExpression)
           where T : class
         {
+
             modelBuilder.Entity<T>().Property<TIdType>(tenantIdPropertyName);
-            modelBuilder.Entity<T>().HasQueryFilter(b => getTenantId(b).Equals(TenantId));
+
+            var newExp = Expression.Lambda<Func<T, bool>>(
+                    Expression.Equal(idExpression.Body, Expression.Property(Expression.Constant(this),
+                    typeof(MultitenantDbContext<TDbContext, TTenant, TIdType>),
+                    nameof(TenantId))), idExpression.Parameters);
+
+            modelBuilder.Entity<T>().HasQueryFilter(newExp);
 
             Action<DbContext> action = (db) =>
             {
@@ -97,34 +106,6 @@ namespace Sample.EFCore
             {
                 item(this);
             }
-        }
-    }
-
-    public class SampleMultitenantDbContext : MultitenantDbContext<SampleMultitenantDbContext, Tenant, Guid>
-    {
-
-        private const string TenantIdPropertyName = "TenantId";
-
-        public SampleMultitenantDbContext(DbContextOptions<SampleMultitenantDbContext> options, Task<Tenant> tenant) : base(options, tenant)
-        {
-        }
-
-        public DbSet<Blog> Blogs { get; set; }
-
-        protected override Guid GetTenantId(Tenant tenant)
-        {
-            return tenant.TenantGuid;
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-            HasTenantIdFilter<Blog>(modelBuilder, TenantIdPropertyName, (b) => EF.Property<Guid>(b, TenantIdPropertyName));
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
         }
     }
 }
