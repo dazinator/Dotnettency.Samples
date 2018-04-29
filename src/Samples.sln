@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.RazorPages", "Sample
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.EFCore.MultitenantDb", "Sample.EFCore.MultitenantDb\Sample.EFCore.MultitenantDb.csproj", "{6E15CF09-9F9D-48D8-86DD-5B58D6855F6D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.EFCore.PerTenantDb", "Sample.EFCore.PerTenantDb\Sample.EFCore.PerTenantDb.csproj", "{BE520C69-2296-49DA-9BA7-B146E51EDE8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{6E15CF09-9F9D-48D8-86DD-5B58D6855F6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E15CF09-9F9D-48D8-86DD-5B58D6855F6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E15CF09-9F9D-48D8-86DD-5B58D6855F6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE520C69-2296-49DA-9BA7-B146E51EDE8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE520C69-2296-49DA-9BA7-B146E51EDE8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE520C69-2296-49DA-9BA7-B146E51EDE8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE520C69-2296-49DA-9BA7-B146E51EDE8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

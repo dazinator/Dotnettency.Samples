@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dotnettency.EFCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 
