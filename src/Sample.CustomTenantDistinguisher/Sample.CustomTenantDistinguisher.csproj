@@ -8,7 +8,7 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Dotnettency.AspNetCore" Version="2.0.0-unstable.99" />
+    <PackageReference Include="Dotnettency.AspNetCore" Version="2.0.0-unstable.111" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.0" />
   </ItemGroup>
 

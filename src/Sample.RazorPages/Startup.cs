@@ -6,9 +6,11 @@ using Dotnettency;
 using Microsoft.Extensions.Configuration;
 using System;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System.Diagnostics;
 
 namespace Sample.RazorPages
 {
+
     public class Startup
     {
         private readonly IHostingEnvironment _environment;
@@ -26,14 +28,17 @@ namespace Sample.RazorPages
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddRouting();
+            // services.AddRouting();
+            services.AddMiddlewareAnalysis();
 
             _loggerFactory.AddConsole();
             var logger = _loggerFactory.CreateLogger<Startup>();
 
+           
+
             var serviceProvider = services.AddAspNetCoreMultiTenancy<Tenant>((options) =>
             {
-                options                  
+                options
                     .InitialiseTenant<TenantShellFactory>() // factory class to load tenant when it needs to be initialised for the first time. Can use overload to provide a delegate instead.                    
                     .ConfigureTenantContainers((containerBuilder) =>
                     {
@@ -43,6 +48,10 @@ namespace Sample.RazorPages
                             events.OnTenantContainerCreated(async (tenantResolver, tenantServiceProvider) =>
                             {
                                 var tenant = await tenantResolver;
+
+                               // var diagnosticListener = tenantServiceProvider.GetRequiredService<DiagnosticListener>();
+                              //  var listener = new TenantMiddlewareDiagnosticListener(tenant);
+                               // diagnosticListener.SubscribeWithAdapter(listener);
 
                             })
                             // callback invoked after a nested container is created for a tenant. i.e typically during a request.
@@ -56,8 +65,11 @@ namespace Sample.RazorPages
                         // We are using an overload that allows us to configure structuremap with familiar IServiceCollection.
                         .WithStructureMap((tenant, tenantServices) =>
                         {
-                            tenantServices.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
                             tenantServices.AddMvc();
+
+                            // tenantServices.AddMiddlewareAnalysis();
+                            //  tenantServices.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+                            // tenantServices.AddMvc();
 
                         })
                         .AddPerRequestContainerMiddlewareServices()
@@ -66,71 +78,36 @@ namespace Sample.RazorPages
                     })
                     .ConfigureTenantMiddleware((a) =>
                     {
-                        
                         a.OnInitialiseTenantPipeline((b, c) =>
                         {
                             var log = c.ApplicationServices.GetRequiredService<ILogger<Startup>>();
-                            logger.LogDebug("Configuring tenant middleware pipeline for tenant: " + b.Tenant?.Name ?? "");
-
-
-                            //if (env.IsDevelopment())
-                            //{
-                            //    appBuilder.UseBrowserLink();
-                            //    appBuilder.UseDeveloperExceptionPage();
-                            //}
-                            //else
-                            //{
-                            //    appBuilder.UseExceptionHandler("/Error");
-                            //}
-
-                            c.UseStaticFiles();
-
-                            // appBuilder.UseStaticFiles(); // This demonstrates static files middleware, but below I am also using per tenant hosting environment which means each tenant can see its own static files in addition to the main application level static files.
-
-                            //  appBuilder.UseModules<Tenant, ModuleBase>();
-
-                            // welcome page only enabled for tenant FOO.
-                            if (b.Tenant?.Name == "Foo")
-                            {
-                                c.UseWelcomePage("/welcome");
-                            }
+                            //  logger.LogDebug("Configuring tenant middleware pipeline for tenant: " + b.Tenant?.Name ?? "");                                                   
+                            c.UseWelcomePage("/welcome");
 
                             c.UseMvc();
+                            // c.UseMvc((r)=> { r.});
                             // display info.
 
                         });
                     });
-                // configure per tenant hosting environment.
-                //.ConfigurePerTenantHostingEnvironment(_environment, (tenantHostingEnvironmentOptions) =>
-                //{
-                //    tenantHostingEnvironmentOptions.OnInitialiseTenantContentRoot((contentRootOptions) =>
-                //    {
-                //        // WE use a tenant's guid id to partition one tenants files from another on disk.
-                //        // NOTE: We use an empty guid for NULL tenants, so that all NULL tenants share the same location.
-                //        var tenantGuid = (contentRootOptions.Tenant?.TenantGuid).GetValueOrDefault();
-                //        contentRootOptions.TenantPartitionId(tenantGuid)
-                //                           .AllowAccessTo(_environment.ContentRootFileProvider); // We allow the tenant content root file provider to access to the environments content root.
-                //    });
-
-                //    tenantHostingEnvironmentOptions.OnInitialiseTenantWebRoot((webRootOptions) =>
-                //    {
-                //        // WE use the tenant's guid id to partition one tenants files from another on disk.
-                //        var tenantGuid = (webRootOptions.Tenant?.TenantGuid).GetValueOrDefault();
-                //        webRootOptions.TenantPartitionId(tenantGuid)
-                //                           .AllowAccessTo(_environment.WebRootFileProvider); // We allow the tenant web root file provider to access the environments web root files.
-                //    });
-                //});
+               
             });
 
             // When using tenant containers, must return IServiceProvider.
-            return serviceProvider;
+             return serviceProvider;
+           // return services.BuildServiceProvider();
         }
 
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, DiagnosticListener diagnosticListener, IHostingEnvironment env)
         {
+
+            var listener = new ApplicationMiddlewareDiagnosticListener();
+            diagnosticListener.SubscribeWithAdapter(listener);
+
+          //  app.UseMvc();
 
             app.UseMultitenancy<Tenant>((options) =>
             {
