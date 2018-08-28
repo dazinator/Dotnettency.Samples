@@ -50,11 +50,11 @@ namespace Sample.RazorPages
                         // We are using an overload that allows us to configure structuremap with familiar IServiceCollection.
                         .WithAutofac((tenant, tenantServices) =>
                         {
-                            foreach (var item in services)
-                            {
-                                tenantServices.Add(item);
-                            }
-                           // tenantServices.AddSingleton(_environment);
+                            //foreach (var item in services)
+                            //{
+                            //    tenantServices.Add(item);
+                            //}
+                           tenantServices.AddSingleton(_environment);
                             // This runs to configure each tenant's container, when tenant is browsed for first time.
                             tenantServices.AddMvc();
 
