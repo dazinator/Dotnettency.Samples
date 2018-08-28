@@ -50,28 +50,33 @@ namespace Sample.RazorPages
                         // We are using an overload that allows us to configure structuremap with familiar IServiceCollection.
                         .WithAutofac((tenant, tenantServices) =>
                         {
+                            foreach (var item in services)
+                            {
+                                tenantServices.Add(item);
+                            }
+                           // tenantServices.AddSingleton(_environment);
                             // This runs to configure each tenant's container, when tenant is browsed for first time.
                             tenantServices.AddMvc();
 
                             // Tried to fix razor compilation issues here but to no avail..
-                            tenantServices.Configure((RazorViewEngineOptions razorOptions) =>
-                            {
-                                var previous = razorOptions.CompilationCallback;
-                                razorOptions.CompilationCallback = (context) =>
-                                {
-                                    previous?.Invoke(context);
+                            //tenantServices.Configure((RazorViewEngineOptions razorOptions) =>
+                            //{
+                            //    var previous = razorOptions.CompilationCallback;
+                            //    razorOptions.CompilationCallback = (context) =>
+                            //    {
+                            //        previous?.Invoke(context);
 
-                                   // var assembly = typeof(Startup).GetTypeInfo().Assembly;
-                                   // var assemblies = assembly.GetReferencedAssemblies().Select(x => MetadataReference.CreateFromFile(Assembly.Load(x).Location))
-                                   // .ToList();
-                                   // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("mscorlib")).Location));
-                                   // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Private.Corelib")).Location));
-                                   // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("Microsoft.AspNetCore.Razor")).Location));
-                                   // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("netstandard")).Location));
+                            //       // var assembly = typeof(Startup).GetTypeInfo().Assembly;
+                            //       // var assemblies = assembly.GetReferencedAssemblies().Select(x => MetadataReference.CreateFromFile(Assembly.Load(x).Location))
+                            //       // .ToList();
+                            //       // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("mscorlib")).Location));
+                            //       // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Private.Corelib")).Location));
+                            //       // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("Microsoft.AspNetCore.Razor")).Location));
+                            //       // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("netstandard")).Location));
                                    
-                                   // context.Compilation = context.Compilation.AddReferences(assemblies);
-                                };
-                            });
+                            //       // context.Compilation = context.Compilation.AddReferences(assemblies);
+                            //    };
+                            //});
                         })
                         .AddPerRequestContainerMiddlewareServices() // services necessary for middleware that initialises tenant containers, and sets HttpContext.RequestServices.
                         .AddPerTenantMiddlewarePipelineServices(); // services necessary for middleware the initialises, and executes tenants middleware pipeline.
