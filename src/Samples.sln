@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.RazorPages", "Sample
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.EFCore.MultitenantDb", "Sample.EFCore.MultitenantDb\Sample.EFCore.MultitenantDb.csproj", "{6E15CF09-9F9D-48D8-86DD-5B58D6855F6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.EFCore.PerTenantDb", "Sample.EFCore.PerTenantDb\Sample.EFCore.PerTenantDb.csproj", "{BE520C69-2296-49DA-9BA7-B146E51EDE8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.EFCore.PerTenantDb", "Sample.EFCore.PerTenantDb\Sample.EFCore.PerTenantDb.csproj", "{BE520C69-2296-49DA-9BA7-B146E51EDE8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Authentication", "Sample.Authentication\Sample.Authentication.csproj", "{672AD8CA-3029-412D-BACB-FA3913E87AD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{BE520C69-2296-49DA-9BA7-B146E51EDE8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE520C69-2296-49DA-9BA7-B146E51EDE8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE520C69-2296-49DA-9BA7-B146E51EDE8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{672AD8CA-3029-412D-BACB-FA3913E87AD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{672AD8CA-3029-412D-BACB-FA3913E87AD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{672AD8CA-3029-412D-BACB-FA3913E87AD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{672AD8CA-3029-412D-BACB-FA3913E87AD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
