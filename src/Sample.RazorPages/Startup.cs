@@ -1,12 +1,11 @@
+using Dotnettency;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Dotnettency;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc.Razor;
 
 namespace Sample.RazorPages
 {
@@ -28,15 +27,17 @@ namespace Sample.RazorPages
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+
             // services.AddRouting();
             services.AddMiddlewareAnalysis();
+            //  services.AddMvc();
+            services.AddWebEncoders(); // Not sure why this is necessary. See https://github.com/aspnet/Mvc/issues/8340 may not be necessary in 2.1.0
 
             _loggerFactory.AddConsole();
-            var logger = _loggerFactory.CreateLogger<Startup>();
-
+            ILogger<Startup> logger = _loggerFactory.CreateLogger<Startup>();
            
 
-            var serviceProvider = services.AddAspNetCoreMultiTenancy<Tenant>((options) =>
+            IServiceProvider serviceProvider = services.AddAspNetCoreMultiTenancy<Tenant>((options) =>
             {
                 options
                     .InitialiseTenant<TenantShellFactory>() // factory class to load tenant when it needs to be initialised for the first time. Can use overload to provide a delegate instead.                    
@@ -44,7 +45,7 @@ namespace Sample.RazorPages
                     {
                         containerBuilder.Events((events) =>
                         {
-                           
+
                         })
                         // Extension methods available here for supported containers. We are using structuremap..
                         // We are using an overload that allows us to configure structuremap with familiar IServiceCollection.
@@ -54,29 +55,11 @@ namespace Sample.RazorPages
                             //{
                             //    tenantServices.Add(item);
                             //}
-                           tenantServices.AddSingleton(_environment);
+                            tenantServices.AddSingleton(_environment); // See https://github.com/aspnet/Mvc/issues/8340
+                            tenantServices.AddWebEncoders();
                             // This runs to configure each tenant's container, when tenant is browsed for first time.
                             tenantServices.AddMvc();
-
-                            // Tried to fix razor compilation issues here but to no avail..
-                            //tenantServices.Configure((RazorViewEngineOptions razorOptions) =>
-                            //{
-                            //    var previous = razorOptions.CompilationCallback;
-                            //    razorOptions.CompilationCallback = (context) =>
-                            //    {
-                            //        previous?.Invoke(context);
-
-                            //       // var assembly = typeof(Startup).GetTypeInfo().Assembly;
-                            //       // var assemblies = assembly.GetReferencedAssemblies().Select(x => MetadataReference.CreateFromFile(Assembly.Load(x).Location))
-                            //       // .ToList();
-                            //       // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("mscorlib")).Location));
-                            //       // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Private.Corelib")).Location));
-                            //       // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("Microsoft.AspNetCore.Razor")).Location));
-                            //       // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("netstandard")).Location));
-                                   
-                            //       // context.Compilation = context.Compilation.AddReferences(assemblies);
-                            //    };
-                            //});
+                          
                         })
                         .AddPerRequestContainerMiddlewareServices() // services necessary for middleware that initialises tenant containers, and sets HttpContext.RequestServices.
                         .AddPerTenantMiddlewarePipelineServices(); // services necessary for middleware the initialises, and executes tenants middleware pipeline.
@@ -85,17 +68,17 @@ namespace Sample.RazorPages
                     {
                         a.OnInitialiseTenantPipeline((b, c) =>
                         {
-                            var log = c.ApplicationServices.GetRequiredService<ILogger<Startup>>();
+                            ILogger<Startup> log = c.ApplicationServices.GetRequiredService<ILogger<Startup>>();
                             //  logger.LogDebug("Configuring tenant middleware pipeline for tenant: " + b.Tenant?.Name ?? "");                                                   
                             c.UseWelcomePage("/welcome");
-                            c.UseMvc();                         
+                            c.UseMvc();
 
                         });
-                    });               
+                    });
             });
 
             // When using tenant containers, must return IServiceProvider.
-             return serviceProvider;
+            return serviceProvider;
         }
 
         public IConfiguration Configuration { get; }
@@ -104,10 +87,8 @@ namespace Sample.RazorPages
         public void Configure(IApplicationBuilder app, DiagnosticListener diagnosticListener, IHostingEnvironment env)
         {
 
-            var listener = new ApplicationMiddlewareDiagnosticListener();
-            diagnosticListener.SubscribeWithAdapter(listener);
-
-          //  app.UseMvc();
+            ApplicationMiddlewareDiagnosticListener listener = new ApplicationMiddlewareDiagnosticListener();
+            diagnosticListener.SubscribeWithAdapter(listener);          
 
             app.UseMultitenancy<Tenant>((options) =>
             {
