@@ -7,6 +7,10 @@ using Microsoft.Extensions.Configuration;
 using System;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc.Razor;
+using System.Reflection;
+using Microsoft.CodeAnalysis;
+using System.Linq;
 
 namespace Sample.RazorPages
 {
@@ -44,28 +48,36 @@ namespace Sample.RazorPages
                     {
                         containerBuilder.Events((events) =>
                         {
-                            // callback invoked after tenant container is created.
-                            events.OnTenantContainerCreated(async (tenantResolver, tenantServiceProvider) =>
-                            {
-                                var tenant = await tenantResolver;
-
-                               // var diagnosticListener = tenantServiceProvider.GetRequiredService<DiagnosticListener>();
-                              //  var listener = new TenantMiddlewareDiagnosticListener(tenant);
-                               // diagnosticListener.SubscribeWithAdapter(listener);
-
-                            })
-                            // callback invoked after a nested container is created for a tenant. i.e typically during a request.
-                            .OnNestedTenantContainerCreated(async (tenantResolver, tenantServiceProvider) =>
-                            {
-                                var tenant = await tenantResolver;
-
-                            });
+                           
                         })
                         // Extension methods available here for supported containers. We are using structuremap..
                         // We are using an overload that allows us to configure structuremap with familiar IServiceCollection.
-                        .WithStructureMap((tenant, tenantServices) =>
+                        .WithAutofac((tenant, tenantServices) =>
                         {
                             tenantServices.AddMvc();
+
+
+                            tenantServices.Configure((RazorViewEngineOptions razorOptions) =>
+                            {
+                                var previous = razorOptions.CompilationCallback;
+                                razorOptions.CompilationCallback = (context) =>
+                                {
+                                    previous?.Invoke(context);
+
+                                   // var assembly = typeof(Startup).GetTypeInfo().Assembly;
+                                   // var assemblies = assembly.GetReferencedAssemblies().Select(x => MetadataReference.CreateFromFile(Assembly.Load(x).Location))
+                                   // .ToList();
+                                   // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("mscorlib")).Location));
+                                   // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Private.Corelib")).Location));
+                                   // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("Microsoft.AspNetCore.Razor")).Location));
+                                   // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("netstandard")).Location));
+
+                                   //// , Version = 2.0.0.0, Culture = neutral, PublicKeyToken = cc7b13ffcd2ddd51
+
+                                   // context.Compilation = context.Compilation.AddReferences(assemblies);
+                                };
+                            });
+
 
                             // tenantServices.AddMiddlewareAnalysis();
                             //  tenantServices.AddSingleton<IActionContextAccessor, ActionContextAccessor>();

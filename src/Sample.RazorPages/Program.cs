@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using StructureMap.AspNetCore;
 
 namespace Sample.RazorPages
 {
@@ -13,8 +12,7 @@ namespace Sample.RazorPages
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseUrls("http://*:5000", "http://*:5001", "http://*:5002", "http://*:5003", "http://*:5004")
-                .UseStructureMap()
+                .UseUrls("http://*:5000", "http://*:5001", "http://*:5002", "http://*:5003", "http://*:5004")               
                 .UseStartup<Startup>()
                 .Build();
     }
