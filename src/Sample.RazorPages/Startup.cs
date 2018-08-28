@@ -5,12 +5,8 @@ using Microsoft.Extensions.Logging;
 using Dotnettency;
 using Microsoft.Extensions.Configuration;
 using System;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Razor;
-using System.Reflection;
-using Microsoft.CodeAnalysis;
-using System.Linq;
 
 namespace Sample.RazorPages
 {
@@ -54,9 +50,10 @@ namespace Sample.RazorPages
                         // We are using an overload that allows us to configure structuremap with familiar IServiceCollection.
                         .WithAutofac((tenant, tenantServices) =>
                         {
+                            // This runs to configure each tenant's container, when tenant is browsed for first time.
                             tenantServices.AddMvc();
 
-
+                            // Tried to fix razor compilation issues here but to no avail..
                             tenantServices.Configure((RazorViewEngineOptions razorOptions) =>
                             {
                                 var previous = razorOptions.CompilationCallback;
@@ -71,22 +68,13 @@ namespace Sample.RazorPages
                                    // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Private.Corelib")).Location));
                                    // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("Microsoft.AspNetCore.Razor")).Location));
                                    // assemblies.Add(MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("netstandard")).Location));
-
-                                   //// , Version = 2.0.0.0, Culture = neutral, PublicKeyToken = cc7b13ffcd2ddd51
-
+                                   
                                    // context.Compilation = context.Compilation.AddReferences(assemblies);
                                 };
                             });
-
-
-                            // tenantServices.AddMiddlewareAnalysis();
-                            //  tenantServices.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-                            // tenantServices.AddMvc();
-
                         })
-                        .AddPerRequestContainerMiddlewareServices()
-                        .AddPerTenantMiddlewarePipelineServices(); // allows tenants to have there own middleware pipeline accessor stored in their tenant containers.
-                                                                   // .WithModuleContainers(); // Creates a child container per IModule.
+                        .AddPerRequestContainerMiddlewareServices() // services necessary for middleware that initialises tenant containers, and sets HttpContext.RequestServices.
+                        .AddPerTenantMiddlewarePipelineServices(); // services necessary for middleware the initialises, and executes tenants middleware pipeline.
                     })
                     .ConfigureTenantMiddleware((a) =>
                     {
@@ -95,19 +83,14 @@ namespace Sample.RazorPages
                             var log = c.ApplicationServices.GetRequiredService<ILogger<Startup>>();
                             //  logger.LogDebug("Configuring tenant middleware pipeline for tenant: " + b.Tenant?.Name ?? "");                                                   
                             c.UseWelcomePage("/welcome");
-
-                            c.UseMvc();
-                            // c.UseMvc((r)=> { r.});
-                            // display info.
+                            c.UseMvc();                         
 
                         });
-                    });
-               
+                    });               
             });
 
             // When using tenant containers, must return IServiceProvider.
              return serviceProvider;
-           // return services.BuildServiceProvider();
         }
 
         public IConfiguration Configuration { get; }
@@ -123,55 +106,9 @@ namespace Sample.RazorPages
 
             app.UseMultitenancy<Tenant>((options) =>
             {
-                options.UsePerTenantContainers();
-                options.UsePerTenantMiddlewarePipeline();
+                options.UsePerTenantContainers(); // Middleware that initialises tenant container, and sets HttpContext.RequestServices appropriately.
+                options.UsePerTenantMiddlewarePipeline(); // Middleware that initialises and executes appropriate tenant middleware pipeline for current tenant.
             });
-
-
-            //app.UseRouter(((routeBuilder) =>
-            //{
-            //    // Makes sure that should any child route match, then the tenant container is restored prior to that route handling the request.
-            //    routeBuilder.EnsureTenantContainer<Tenant>((childRouteBuilder) =>
-            //    {
-            //        // Adds a route that will handle the request via the current tenants middleware pipleine. 
-            //        childRouteBuilder.MapTenantMiddlewarePipeline<Tenant>((context, appBuilder) =>
-            //        {
-
-            //            var logger = appBuilder.ApplicationServices.GetRequiredService<ILogger<Startup>>();
-            //            logger.LogDebug("Configuring tenant middleware pipeline for tenant: " + context.Tenant?.Name ?? "");
-
-
-            //            if (env.IsDevelopment())
-            //            {
-            //                appBuilder.UseBrowserLink();
-            //                appBuilder.UseDeveloperExceptionPage();
-            //            }
-            //            else
-            //            {
-            //                appBuilder.UseExceptionHandler("/Error");
-            //            }
-
-            //            appBuilder.UseStaticFiles();
-
-            //            // appBuilder.UseStaticFiles(); // This demonstrates static files middleware, but below I am also using per tenant hosting environment which means each tenant can see its own static files in addition to the main application level static files.
-
-            //            //  appBuilder.UseModules<Tenant, ModuleBase>();
-
-            //            // welcome page only enabled for tenant FOO.
-            //            if (context.Tenant?.Name == "Foo")
-            //            {
-            //                appBuilder.UseWelcomePage("/welcome");
-            //            }
-
-            //            appBuilder.UseMvc();
-            //            // display info.
-            //            // appBuilder.Run(DisplayInfo);
-
-            //        }); // handled by the tenant's middleware pipeline - if there is one.                  
-            //    });
-            //}));
-
-
         }
     }
 }
