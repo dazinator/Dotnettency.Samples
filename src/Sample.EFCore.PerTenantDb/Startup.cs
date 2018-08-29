@@ -31,6 +31,9 @@ namespace Sample.EFCore.PerTenantDb
                            events.OnTenantContainerCreated(async (tenantResolver, tenantServiceProvider) =>
                            {
                                // This is where we ensure the database is created / migrated on startup of each tenant.
+
+
+
                                var tenant = await tenantResolver;
 
                                using (var scope = tenantServiceProvider.CreateScope())
@@ -119,6 +122,8 @@ namespace Sample.EFCore.PerTenantDb
 
                 var tenantTask = context.RequestServices.GetRequiredService<Task<Tenant>>();
                 var tenant = await tenantTask;
+
+
 
                 await context.Response.WriteAsync("Hello: " + tenant.Name);
             });

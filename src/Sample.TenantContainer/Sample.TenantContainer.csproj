@@ -9,8 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dotnettency.AspNetCore.Container" Version="2.0.0-unstable.111" />
-    <PackageReference Include="Dotnettency.Container.StructureMap" Version="2.0.0-unstable.111" />
+    <PackageReference Include="Dotnettency.AspNetCore.Container" Version="2.0.0-unstable.112" />
+    <PackageReference Include="Dotnettency.Container.StructureMap" Version="2.0.0-unstable.112" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.0" />
     <PackageReference Include="StructureMap.AspNetCore" Version="1.4.0" />

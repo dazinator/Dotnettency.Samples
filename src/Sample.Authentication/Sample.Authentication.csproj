@@ -9,9 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dotnettency.AspNetCore.Container" Version="2.0.0-unstable.111" />
-    <PackageReference Include="Dotnettency.AspNetCore.MiddlewarePipeline" Version="2.0.0-unstable.111" />
-    <PackageReference Include="Dotnettency.Container.Autofac" Version="2.0.0-unstable.111" />
+    <PackageReference Include="Dotnettency.AspNetCore.Container" Version="2.0.0-unstable.112" />
+    <PackageReference Include="Dotnettency.AspNetCore.MiddlewarePipeline" Version="2.0.0-unstable.112" />
+    <PackageReference Include="Dotnettency.Container.Autofac" Version="2.0.0-unstable.112" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />
   </ItemGroup>
 
